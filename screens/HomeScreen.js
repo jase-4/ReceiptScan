@@ -15,9 +15,13 @@ const HomeScreen = () => {
             style={styles.button}>  
                 <Text style={styles.buttonText}>Scan</Text> 
              </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>History</Text>
-            </TouchableOpacity> 
+             <TouchableOpacity 
+                onPress={() => {
+                navigation.replace("History")}}
+                style={styles.button}
+                > 
+                    <Text style={styles.buttonText}>History</Text>
+            </TouchableOpacity>
             <TouchableOpacity 
                 onPress={() => {
                 navigation.replace("Settings")}}
@@ -44,7 +48,6 @@ const styles = StyleSheet.create({
    flexWrap: 'wrap',
    justifyContent: 'center',
    alignItems: 'center'
-
   },
    button: {
     backgroundColor: '#151517',

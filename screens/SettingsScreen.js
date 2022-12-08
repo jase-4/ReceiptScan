@@ -1,18 +1,19 @@
 import { useNavigation } from '@react-navigation/core'
 import React,{useState} from 'react'
-import { StyleSheet, Text, TouchableOpacity, View,TextInput, Alert, Modal } from 'react-native'
-import { auth } from '../firebase'
-import { firebase } from "@firebase/app";
+import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert, Modal } from 'react-native'
+import { getAuth, signInWithEmailAndPassword  } from "firebase/auth";
+
+const auth = getAuth()
 
 const SettingsScreen = () => {
 
   const [password, setPassword] = useState('')
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation()
-  const user = firebase.auth().currentUser;
+  const user = auth.currentUser;
   
   const handleLoginRequirement = () => {
-    auth.signInWithEmailAndPassword(user.email,password)
+    signInWithEmailAndPassword(user.email,password)
     .then(userCredentials => {
         const user_cred = userCredentials.user;
         console.log('User to be deleted', user_cred.email);
