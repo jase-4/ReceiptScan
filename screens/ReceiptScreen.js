@@ -5,7 +5,7 @@ import {
   Text,
   View,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 import { Button, List } from "react-native-paper";
 import { useNavigation } from "@react-navigation/core";
@@ -17,12 +17,10 @@ const formatter = new Intl.NumberFormat("en-US", {
 });
 
 const ReceiptScreen = ({ route, navigation }) => {
-
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const { receiptData } = route.params;
   const items = receiptData.items;
-  console.log(receiptData);
 
   const generateData = async () => {
     let renderData = [];
@@ -30,9 +28,38 @@ const ReceiptScreen = ({ route, navigation }) => {
     for (const name in items) {
       if (Object.hasOwnProperty.call(items, name)) {
         const item = items[name];
+
+        if (!item.tags) {
+          item.tags = [""]
+        }
+
+        let tagString = "";
+        let icon = item.tags[0];
+        if (icon == "work") {
+          icon = "briefcase"
+        }
+        else if (icon == "medicine") {
+          icon = "medical-bag"
+        }
+        else if (icon == "tech") {
+          icon = "printer"
+        }
+        else if (icon == "") {
+          icon = "none"
+        }
+
+        for (const tag of item.tags) {
+          tagString += tag.charAt(0).toUpperCase() + tag.slice(1) + ", ";
+        }
+        tagString = tagString.slice(0, -2);
+
+
+
         renderData.push({
           name: name,
           price: item.price,
+          tags: tagString,
+          icon: icon
         });
       }
     }
@@ -47,9 +74,9 @@ const ReceiptScreen = ({ route, navigation }) => {
 
   return (
     <View style={{ flex: 1, padding: 24 }}>
-      <Button 
+      <Button
         onPress={() => {
-          navigation.replace("History")
+          navigation.replace("History");
         }}
         icon="chevron-left"
       >
@@ -60,25 +87,27 @@ const ReceiptScreen = ({ route, navigation }) => {
       ) : (
         <>
           <View style={styles.textWrapper}>
-            <Text style={styles.receiptInfo}>
-              {receiptData.date}
-            </Text>
+            <Text style={styles.receiptInfo}>{receiptData.date}</Text>
           </View>
           <FlatList
             data={data}
             keyExtractor={({ id }, index) => id}
             renderItem={({ item }) => (
-              <List.Item
-                title={item.name}
+              <List.Item 
+                title={item.name} 
+                description={item.tags}
                 right={() => {
-                  return <Text>{formatter.format(item.price)}</Text>;
+                  return <Text>
+                    {formatter.format(item.price)}
+                  </Text>
                 }}
-              />
+                left={props => <List.Icon {...props} icon={item.icon} />}
+                />
             )}
           />
 
           <View style={styles.textWrapper}>
-            <Text style={styles.receiptInfo}>
+            <Text style={styles.totalPrice}>
               Total Price: {formatter.format(receiptData.totalPrice)}
             </Text>
           </View>
@@ -96,10 +125,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
     marginTop: 0,
-    width: '100%',
+    width: "100%",
+  },
+  totalPrice: {
+    textAlign: "center", // <-- the magic
+    fontWeight: "bold",
+    fontSize: 18,
+    marginTop: 0,
+    width: "100%",
+    marginBottom: 20
   },
   textWrapper: {
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
